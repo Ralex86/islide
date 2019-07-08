@@ -6,12 +6,14 @@ var path = require('path');
 var express = require('express');
 var app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, '../iremote/build')));
+app.use(express.static(path.join(__dirname, '../iscreen/build')));
 
 var options = {
   key: fs.readFileSync('./file.pem'),
   cert: fs.readFileSync('./file.crt'),
 };
-var serverPort = 3001;
+var serverPort = 443;
 
 var server = https.createServer(options, app);
 var io = require('socket.io')(server);

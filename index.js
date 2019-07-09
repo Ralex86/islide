@@ -84,6 +84,11 @@ remote.on('connection', function(socket) {
     console.log('slideIndex', slide);
     screen.emit('slideIndex', slide.index);
   });
+  
+  socket.on('displayPointer', function(display) {
+    console.log('display', display);
+    screen.emit('display', display);
+  });
 });
 
 screen.on('connection', function(socket) {

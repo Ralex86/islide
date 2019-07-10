@@ -2,30 +2,61 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var fs = require('fs');
 var https = require('https');
 var path = require('path');
+const util = require('util');
+const readdir = util.promisify(fs.readdir);
 
 var express = require('express');
 var app = express();
+
 app.use(express.static(path.join(__dirname, 'dist')));
+app.use('/slides', express.static(path.join(__dirname, 'dist/slides')));
 app.use(express.static(path.join(__dirname, '../iremote/build')));
 app.use(express.static(path.join(__dirname, '../iscreen/build')));
+
+async function getSlides(allFiles = []) {
+  const dirname = 'dist/slides';
+  const url = 'slides';
+  const files = (await readdir(dirname)).map(file => {
+    return path.join(url, file);
+  });
+  allFiles.push(...files);
+  return allFiles;
+}
 
 var options = {
   key: fs.readFileSync('./file.pem'),
   cert: fs.readFileSync('./file.crt'),
 };
-var serverPort = 443;
+
+if (process.env.ENV === 'dev') {
+  var serverPort = 3001;
+} else if (process.env.ENV === 'int') {
+  var serverPort = 443;
+}
 
 var server = https.createServer(options, app);
 var io = require('socket.io')(server);
 
+app.get('/slides', async function(req, res) {
+  const data = await getSlides();
+  await res.setHeader('Content-Type', 'application/json');
+  await res.end(JSON.stringify(data));
+});
+
 app.get('/screen', function(req, res) {
-  // res.sendFile(__dirname + '/public/index.html');
-  res.sendFile(path.join(__dirname, 'dist/iscreen', 'index.html'));
+  if (process.env.ENV === 'dev') {
+    res.sendFile(path.join(__dirname, '../iscreen/build', 'index.html'));
+  } else if (process.env.ENV === 'prod') {
+    res.sendFile(__dirname + '/dist/screen/index.html');
+  }
 });
 
 app.get('*', function(req, res) {
-  // res.sendFile(__dirname + '/public/index.html');
-  res.sendFile(path.join(__dirname, 'dist/iremote', 'index.html'));
+  if (process.env.ENV === 'dev') {
+    res.sendFile(path.join(__dirname, '../iremote/build', 'index.html'));
+  } else if (process.env.ENV === 'prod') {
+    res.sendFile(__dirname + '/dist/remote/index.html');
+  }
 });
 
 const remote = io.of('/remote');

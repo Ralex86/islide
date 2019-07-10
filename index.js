@@ -2,9 +2,9 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var express = require('express');
 var socketIO = require('socket.io');
 
-var setup = require('./src/islide/setup');
-var routes = require('./src/islide/routes');
-var socket = require('./src/islide/socket');
+var setup = require('./src/setup');
+var routes = require('./src/routes');
+var socket = require('./src/socket');
 
 var app = express();
 var server = setup(app);

@@ -6,6 +6,7 @@ const readdir = util.promisify(fs.readdir);
 
 async function getSlides(allFiles = []) {
   const dirname = 'dist/slides';
+  console.log('hey');
   const url = 'slides';
   const files = (await readdir(dirname)).map(file => {
     return path.join(url, file);
@@ -23,9 +24,7 @@ module.exports = function(app) {
 
   app.get('/screen', function(req, res) {
     if (process.env.ENV === 'dev') {
-      res.sendFile(
-        path.join(__dirname, '../../../iscreen/build', 'index.html'),
-      );
+      res.sendFile(path.join(__dirname, '../../iscreen/build', 'index.html'));
     } else if (process.env.ENV === 'prod') {
       res.sendFile(__dirname + '/dist/screen/index.html');
     }
@@ -33,7 +32,7 @@ module.exports = function(app) {
 
   app.get('*', function(req, res) {
     if (process.env.ENV === 'dev') {
-      res.sendFile(path.join(__dirname, '../iremote/build', 'index.html'));
+      res.sendFile(path.join(__dirname, '../../iremote/build', 'index.html'));
     } else if (process.env.ENV === 'prod') {
       res.sendFile(__dirname + '/dist/remote/index.html');
     }

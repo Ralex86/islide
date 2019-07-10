@@ -25,7 +25,7 @@ module.exports = function(app) {
   app.get('/screen', function(req, res) {
     if (process.env.ENV === 'dev') {
       res.sendFile(path.join(__dirname, '../../iscreen/build', 'index.html'));
-    } else if (process.env.ENV === 'prod') {
+    } else if (process.env.ENV === 'int') {
       res.sendFile(__dirname + '/dist/screen/index.html');
     }
   });
@@ -33,7 +33,7 @@ module.exports = function(app) {
   app.get('*', function(req, res) {
     if (process.env.ENV === 'dev') {
       res.sendFile(path.join(__dirname, '../../iremote/build', 'index.html'));
-    } else if (process.env.ENV === 'prod') {
+    } else if (process.env.ENV === 'int') {
       res.sendFile(__dirname + '/dist/remote/index.html');
     }
   });
